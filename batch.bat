@@ -1,0 +1,2 @@
+ruby "scrabble.rb"
+@pause
