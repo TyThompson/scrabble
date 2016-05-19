@@ -1,5 +1,8 @@
+require 'pry'
+
 class Scrabble
-attr_reader :m, :i, :t, :s, :m2, :i2, :t2, :s2
+attr_reader :m, :i, :t, :s, :m2, :i2, :t2, :s2, :gameover, :word
+
 def initialize
 	@m = 0 #Player 1 max
 	@i = 0 #Player 1 input
@@ -10,6 +13,73 @@ def initialize
 	@t2 = 0 #Player 2 total
 	@s2 = 0 #Player 2 Score
 end
+
+def passcheck (i, i2)
+    if i.downcase == "passyes" && i2.downcase == "passyes"
+	  #print results
+	  print "Ending game because both players passed."
+	return true
+    elsif i.downcase == "passyes"
+	  @s = 0
+	  puts "Player 1 passed."
+    elsif i2.downcase == "passyes"
+	  @s2 = 0
+	  puts "Player 2 passed."
+    end
+end
+
+def quitcheck(i, i2)
+	if i.downcase == "quityes"
+		return true
+	end
+    if i2.downcase == "quityes"
+	  return true
+    end
+end
+
+def negativecheck_p1(i)
+	if i.to_i<0
+		@s = 0
+		puts "Player 1 entered a negative number. No points given."
+    end
+end
+
+def negativecheck_p2(i2)
+    if i2.to_i<0
+      @s2 = 0
+      puts "Player 2 entered a negative number. No points given."
+    end
+end
+
+def wordscore_p1(word)
+    word = word.split("")
+    letterkey = { "a" => 1, "e" => 1, "i" => 1, "o" => 1, "u" => 1, "l" => 1, "n" => 1, "r" => 1, "s" => 1, "t" => 1,
+                  "d" => 2, "g" => 2,
+                  "b" => 3, "c" => 3, "m" => 3, "p" => 3,
+                  "f" => 4, "h" => 4, "v" => 4, "w" => 4, "y" => 4,
+                  "k" => 5,
+                  "j" => 8, "x" => 8,
+                  "q" => 10,"z" =>10 }
+	 word.each() do |letter|
+		 @s = letterkey[letter]
+		 @t = @t+@s
+	end	
+end
+
+def wordscore_p2(word)
+    word = word.split("")
+    letterkey = { "a" => 1, "e" => 1, "i" => 1, "o" => 1, "u" => 1, "l" => 1, "n" => 1, "r" => 1, "s" => 1, "t" => 1,
+                  "d" => 2, "g" => 2,
+                  "b" => 3, "c" => 3, "m" => 3, "p" => 3,
+                  "f" => 4, "h" => 4, "v" => 4, "w" => 4, "y" => 4,
+                  "k" => 5,
+                  "j" => 8, "x" => 8,
+                  "q" => 10,"z" =>10 }
+	 word.each() do |letter|
+		 @s2 = letterkey[letter]
+		 @t2 = @t2+@s2
+	end	
+end	
 
 def scoresheet
 	  puts
@@ -49,51 +119,31 @@ def scoreupdate(s, s2)
 	end
 end
 
-
-def game_over? board
-  have_winner?(board) || bothpass?(board)
-end
-
 end
 
 scrabble = Scrabble.new()
-until scrabble.i == "quit" || scrabble.i2 == "quit"
-  print "Type score for Player 1: "
-  i = gets.chomp
-  if i.downcase == "quit"
-	break
-  else
+gameover = false
+until gameover == true
+	print "Type score for Player 1: "
+	i = gets.chomp
 	print "Type score for Player 2: "
 	i2 = gets.chomp
-    if i2.downcase == "quit"
-	  break
-    else
-
-      s = i.to_i
-      s2 = i2.to_i
-      if s<0
-        s = 0
-        puts "Player 1 entered a negative number. No points given."
-    end
-    if s2<0
-      s2 = 0
-      puts "Player 2 entered a negative number. No points given."
-    end
-
-    if i.downcase == "pass" && i2.downcase == "pass"
-	  #print results
-	  print "Ending game because both players passed."
-	  scrabble.scoresheet
-	  break
-    elsif i.downcase == "pass"
-	  s = 0
-	  puts "Player 1 passed."
-    elsif i2.downcase == "pass"
-	  s2 = 0
-	  puts "Player 2 passed."
-    end
-	scrabble.scoreupdate(s, s2)
-	scrabble.scoresheet
+	gameover = scrabble.quitcheck(i,i2)
+	gameover = scrabble.passcheck(i,i2)
+	break if gameover
+	if /^[a-zA-Z]*$/.match(i)
+		scrabble.wordscore_p1(i)
+	else
+		scrabble.negativecheck_p1(i)
 	end
-  end
+	
+
+	if /^[a-zA-Z]*$/.match(i2)
+		scrabble.wordscore_p2(i2)
+	else
+		scrabble.negativecheck_p2(i2)
+	end
+	scrabble.scoreupdate(scrabble.s, scrabble.s2)
+	scrabble.scoresheet
 end
+scrabble.scoresheet
