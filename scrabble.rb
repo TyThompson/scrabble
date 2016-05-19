@@ -57,7 +57,6 @@ end
 end
 
 scrabble = Scrabble.new()
-scrabble2 = Scrabble.new()
 until scrabble.i == "quit" || scrabble.i2 == "quit"
   print "Type score for Player 1: "
   i = gets.chomp
@@ -95,7 +94,6 @@ until scrabble.i == "quit" || scrabble.i2 == "quit"
     end
 	scrabble.scoreupdate(s, s2)
 	scrabble.scoresheet
-	scrabble2.scoresheet
 	end
   end
 end
