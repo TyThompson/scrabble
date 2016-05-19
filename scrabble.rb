@@ -1,19 +1,64 @@
-#1 player, type in a # and gives running total and max
-#max is over lifetime of entries
-#lvl 2, 2 player
-#lvl 3, save to a File
+class Scrabble
+attr_reader :m, :i, :t, :s, :m2, :i2, :t2, :s2
+def initialize
+	@m = 0 #Player 1 max
+	@i = 0 #Player 1 input
+	@t = 0 #Player 1 total
+	@s = 0 #Player 1 Score
+	@m2 = 0 #Player 2 max
+	@i2 = 0 #Player 2 input
+	@t2 = 0 #Player 2 total
+	@s2 = 0 #Player 2 Score
+end
+
+def scoresheet
+	  puts
+	  #print results
+	  print "Player 1 Total: ", @t
+	  puts
+	  print  "Player 1 Max: ", @m
+	  puts
+	  print "Player 2 Total: ", @t2
+	  puts
+	  print "Player 2 Max: ", @m2
+	  puts
+
+	  #creating the final scoresheet
+	  fname = "scoresheet.txt"
+	  file = File.open(fname, "w")
+	  file.print "Player 1 Total: ", @t
+	  file.puts
+	  file.print  "Player 1 Max: ", @m
+	  file.puts
+	  file.print "Player 2 Total: ", @t2
+	  file.puts
+	  file.print  "Player 2 Max: ", @m2
+	  file.puts
+	  file.close
+end
+
+def scoreupdate(s, s2)
+    @t += s
+    @t2 += s2
+    #check if input is the new max score this round
+    if s > @m
+	  @m = s
+	end
+	if s2 > @m2
+	 @m2 = s2
+	end
+end
 
 
-m = 0 #Player 1 max
-i = 0 #Player 1 input
-t = 0 #Player 1 total
-s = 0 #Player 1 Score
-m2 = 0 #Player 2 max
-i2 = 0 #Player 2 input
-t2 = 0 #Player 2 total
-s2 = 0 #Player 2 Score
+def game_over? board
+  have_winner?(board) || bothpass?(board)
+end
 
-until i == "quit" || i2 == "quit"
+end
+
+scrabble = Scrabble.new()
+scrabble2 = Scrabble.new()
+until scrabble.i == "quit" || scrabble.i2 == "quit"
   print "Type score for Player 1: "
   i = gets.chomp
   if i.downcase == "quit"
@@ -39,29 +84,7 @@ until i == "quit" || i2 == "quit"
     if i.downcase == "pass" && i2.downcase == "pass"
 	  #print results
 	  print "Ending game because both players passed."
-	  puts
-	  #print results
-	  print "Player 1 Total: ", t
-	  puts
-	  print  "Player 1 Max: ", m
-	  puts
-	  print "Player 2 Total: ", t2
-	  puts
-	  print "Player 2 Max: ", m2
-	  puts
-
-	  #creating the final scoresheet
-	  fname = "scoresheet.txt"
-	  file = File.open(fname, "w")
-	  file.print "Player 1 Total: ", t
-	  file.puts
-	  file.print  "Player 1 Max: ", m
-	  file.puts
-	  file.print "Player 2 Total: ", t2
-	  file.puts
-	  file.print  "Player 2 Max: ", m2
-	  file.puts
-	  file.close
+	  scrabble.scoresheet
 	  break
     elsif i.downcase == "pass"
 	  s = 0
@@ -70,39 +93,9 @@ until i == "quit" || i2 == "quit"
 	  s2 = 0
 	  puts "Player 2 passed."
     end
-
-    t += s
-    t2 += s2
-    #check if input is the new max score this round
-    if s > m
-	  m = s
-	end
-	if s2 > m2
-	  m2 = s2
-	end
-
-	#print results
-	print "Player 1 Total: ", t
-	puts
-	print  "Player 1 Max: ", m
-	puts
-	print "Player 2 Total: ", t2
-	puts
-	print "Player 2 Max: ", m2
-	puts
-
-	#creating the final scoresheet
-	fname = "scoresheet.txt"
-	file = File.open(fname, "w")
-	file.print "Player 1 Total: ", t
-	file.puts
-	file.print  "Player 1 Max: ", m
-	file.puts
-	file.print "Player 2 Total: ", t2
-	file.puts
-	file.print  "Player 2 Max: ", m2
-	file.puts
-	file.close
+	scrabble.scoreupdate(s, s2)
+	scrabble.scoresheet
+	scrabble2.scoresheet
 	end
   end
 end
