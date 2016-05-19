@@ -24,10 +24,16 @@ def noscorecheck?(word)
 		word == "quityes" || word == "passyes" || word.to_i<0
 end
 
+def wordvalidate?(word)
+	dict = File.read("scrabbledict.txt").downcase
+	# word = "word"
+  dict.include?(word.downcase)
+end
+
+
 def wordscore(word)
-	total = 0
-	score = 0
 	word = word.split("")
+	score = 0
 	letterkey = { "a" => 1, "e" => 1, "i" => 1, "o" => 1, "u" => 1, "l" => 1, "n" => 1, "r" => 1, "s" => 1, "t" => 1,
 								"d" => 2, "g" => 2,
 								"b" => 3, "c" => 3, "m" => 3, "p" => 3,
@@ -35,11 +41,12 @@ def wordscore(word)
 								"k" => 5,
 								"j" => 8, "x" => 8,
 								"q" => 10,"z" =>10 }
- 							word.each() do |letter|
-	 						score = letterkey[letter]
-	 				  	total = total+score
-					    end
-							return total
+	word.each do |letter|
+		if letterkey.include?(letter)
+			score += letterkey[letter]
+		end
+	end
+	score
 end
 
 # def player_wants_to_quit?
@@ -68,7 +75,7 @@ loop do
 	if scrabble.noscorecheck?(i)
 		s = 0
 		print "Player 1 is awarded no points this round."
-	elsif /^[a-zA-Z]*$/.match(i)
+	elsif /^[a-zA-Z]*$/.match(i) && scrabble.wordvalidate?(i)
 		s = scrabble.wordscore(i)
 		else
 			s = i.to_i
@@ -82,7 +89,7 @@ loop do
 	if scrabble.noscorecheck?(i2)
 		s2 = 0
 		print "Player 2 is awarded no points this round."
-	elsif /^[a-zA-Z]*$/.match(i2)
+	elsif /^[a-zA-Z]*$/.match(i2) && scrabble.wordvalidate?(i2)
 		s2 = scrabble.wordscore(i2)
 	else
 			s2 = i2.to_i
